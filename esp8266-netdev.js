@@ -338,34 +338,40 @@ class ESP8266NetDev {
   write(fd, data, cb) {
     this.errno = 0;
     var sck = this._sockets[fd];
-    if (sck) {
-      this._at.send(`AT+CIPSEND=${sck._linkid},${data.length}`, (r) => {
-        if (r === "OK") {
-          this._at.send(
-            data,
-            (r2) => {
-              if (r2 === "SEND OK") {
-                if (cb) cb(0);
-              } else if (r2 === "TIMEOUT") {
-                this.errno = 110; // ETIMEDOUT
-                if (cb) cb(this.errno, sck);
+    if (!sck) {
+      this.errno = 9; // EBADF
+      if (cb) cb(this.errno);
+    }
+    // Split the data into multiple packets
+    let packets = Array(Math.ceil(data.length / 1460)).fill(null).map((_, i) => {
+      return data.slice(i * 1460, (i + 1) * 1460);
+    });
+    // A recursion function to send these packets
+    const send_packet = (i) => {
+      this._at.send(`AT+CIPSEND=${sck._linkid},${packets[i].length}`, (r) => {
+        if (r === 'OK') {
+          this._at.send(packets[i], (r2) => {
+            if (r2 === 'SEND OK') {
+              if (i < packets.length - 1) {
+                send_packet(i + 1);
               } else {
-                this.errno = 70; // ECOMM
-                if (cb) cb(this.errno);
+                if (cb) cb(0);
               }
-            },
-            ["SEND OK", "SEND FAIL", "ERROR"],
-            { sendAsData: true }
-          );
+            } else if (r2 === 'TIMEOUT') {
+              this.errno = 110; // ETIMEDOUT
+              if (cb) cb(this.errno, sck);
+            } else {
+              this.errno = 70; // ECOMM
+              if (cb) cb(this.errno);
+            }
+          }, ['SEND OK', 'SEND FAIL', 'ERROR'], { sendAsData: true });
         } else {
           this.errno = 70; // ECOMM
           if (cb) cb(this.errno);
         }
       });
-    } else {
-      this.errno = 9; // EBADF
-      if (cb) cb(this.errno);
-    }
+    };
+    send_packet(0);
   }
 
   /**
