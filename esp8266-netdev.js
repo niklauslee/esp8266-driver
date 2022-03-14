@@ -341,6 +341,7 @@ class ESP8266NetDev {
     if (!sck) {
       this.errno = 9; // EBADF
       if (cb) cb(this.errno);
+      return;
     }
     // Split the data into multiple packets
     let packets = Array(Math.ceil(data.length / 1460)).fill(null).map((_, i) => {
