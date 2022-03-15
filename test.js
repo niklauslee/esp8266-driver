@@ -5,12 +5,12 @@ var net = require("net");
 var ESP8266Mock = require("./test-esp8266-mock").ESP8266Mock;
 var esp8266_driver = require("./index");
 
-var jest = require("@niklauslee/micro-jest");
+var jest = require("micro-jest");
 var test = jest.test;
 var expect = jest.expect;
 
-var debug = true;
-// var debug = false;
+// var debug = true;
+var debug = false;
 
 function readyWiFi(mock, done) {
   esp8266_driver
@@ -593,5 +593,5 @@ test("[http] server accepts multiple requests", (done) => {
   });
 });
 
-global.jest = jest;
-// jest.start(3);
+// global.jest = jest;
+jest.start();

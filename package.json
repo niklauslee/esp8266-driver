@@ -2,5 +2,8 @@
   "name": "esp8266-driver",
   "version": "1.0.0",
   "description": "ESP8266 network device driver for Kaluma",
-  "main": "index.js"
+  "main": "index.js",
+  "dependencies": {
+    "micro-jest": "git+https://github.com/niklauslee/micro-jest.git"
+  }
 }

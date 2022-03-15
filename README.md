@@ -1,4 +1,4 @@
-> __THIS DRIVER IS EXPERIMENTAL__
+> **THIS DRIVER IS EXPERIMENTAL**
 > Currently this driver is not stable, so we recommend to use ESP8266 AT commands directly.
 
 # ESP8266-driver
@@ -39,41 +39,47 @@ npm install https://github.com/niklauslee/esp8266-driver
 If you wired ESP8266 module to UART0 you can setup simply as below:
 
 ```js
-require('esp8266-driver').setup().then(() => {
-  // ...
-});  
+require("esp8266-driver")
+  .setup()
+  .then(() => {
+    // ...
+  });
 ```
 
 Otherwise you can setup with an UART instance as below.
 
 ```js
-var UART = require('uart').UART;
-var serial0 = new UART(0, {bufferSize: 4096});
-var esp8266 = require('esp8266-driver');
+var UART = require("uart").UART;
+var serial0 = new UART(0, { bufferSize: 4096 });
+var esp8266 = require("esp8266-driver");
 esp8266.setup(serial0).then(() => {
   // ...
 });
 ```
 
-You can see all AT commands and response in __Terminal__ if you pass `debug` parameter as `true`.
+You can see all AT commands and response in **Terminal** if you pass `debug` parameter as `true`.
 
 ```js
-require('esp8266-driver').setup(null, {debug: true}).then(() => {
-  // ...
-});  
+require("esp8266-driver")
+  .setup(null, { debug: true })
+  .then(() => {
+    // ...
+  });
 ```
 
 The classes in `wifi`, `net`, `http` builtin modules should be instantiated after `setup()`.
 
 ```js
-var WiFi = require('wifi').WiFi;
-require('esp8266-driver').setup().then(() => {
-  var wifi = new WiFi();
-  var connectInfo = {ssid: "iptime", password: "12345678"};
-  wifi.connect(connectInfo, err => {
-    // ...
+var WiFi = require("wifi").WiFi;
+require("esp8266-driver")
+  .setup()
+  .then(() => {
+    var wifi = new WiFi();
+    var connectInfo = { ssid: "iptime", password: "12345678" };
+    wifi.connect(connectInfo, (err) => {
+      // ...
+    });
   });
-});
 ```
 
 We recommend you do not place Wi-Fi SSID and password in the code. Instead, you can enter `WIFI_SSID` and `WIFI_PASSWORD` using [Storage API](https://docs.kaluma.io/api-reference/storage) as below in Terminal.
@@ -86,20 +92,22 @@ We recommend you do not place Wi-Fi SSID and password in the code. Instead, you 
 Then, you can connect Wi-Fi without connection info as below:
 
 ```js
-var WiFi = require('wifi').WiFi;
-require('esp8266-driver').setup().then(() => {
-  var wifi = new WiFi();
-  wifi.connect(err => {
-    // ...
+var WiFi = require("wifi").WiFi;
+require("esp8266-driver")
+  .setup()
+  .then(() => {
+    var wifi = new WiFi();
+    wifi.connect((err) => {
+      // ...
+    });
   });
-});
 ```
 
 # API
 
 ## esp8266.setup([serial[, options]])
 
-- **`serial`** `<UART>`  A serial connected to ESP8266 module. If this parameter is omitted, UART0 is used as default. Default: UART0.
+- **`serial`** `<UART>` A serial connected to ESP8266 module. If this parameter is omitted, UART0 is used as default. Default: UART0.
 - **`options`** `<object>` Options to be passed to internal AT command class.
 - **Returns:** `<Promise>`
 
@@ -121,4 +129,10 @@ Half-closing is not supported. Trying to half-close will cause just close.
 
 Web browsers uses keep-alive connection by adding `Connection: keep-alive` in HTTP request headers.
 
+# Testing
 
+To run test cases on the board.
+
+```bash
+$ kaluma flash ./test.js --bundle --shell
+```
