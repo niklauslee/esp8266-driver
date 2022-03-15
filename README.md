@@ -1,4 +1,5 @@
-> THIS DRIVER IS EXPERIMENTAL
+> __THIS DRIVER IS EXPERIMENTAL__
+> Currently this driver is not stable, so we recommend to use ESP8266 AT commands directly.
 
 # ESP8266-driver
 
